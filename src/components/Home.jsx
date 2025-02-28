@@ -183,7 +183,7 @@ function App() {
       </Container>
 
       <Box sx={{ mt: 4, p: 4, backgroundColor: "#f5f5f5", textAlign: "center" }}>
-        <Typography fontFamily={'libre-baskerville-regular'} variant="h6">Acerca de Nosotros</Typography>
+        <Typography fontFamily={'libre-baskerville-regular'} variant="h6">Acerca de nosotros</Typography>
         <Typography fontFamily={'libre-baskerville-regular'} variant="body2"> Contacto | FAQ | Terminos y Condiciones</Typography>
           <IconButton color="inherit" component="a" href="https://www.facebook.com/" target="_blank"><Facebook /></IconButton>
           <IconButton color="inherit" component="a" href="https://www.instagram.com/" target="_blank"><Instagram /></IconButton>
