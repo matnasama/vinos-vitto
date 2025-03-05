@@ -183,12 +183,12 @@ function App() {
       </Container>
 
       <Box sx={{ mt: 4, p: 4, backgroundColor: "#f5f5f5", textAlign: "center" }}>
-        <Typography fontFamily={'libre-baskerville-regular'} variant="h6">Acerca de nosotros</Typography>
-        <Typography fontFamily={'libre-baskerville-regular'} variant="body2"> Contacto | FAQ | Terminos y Condiciones</Typography>
-          <IconButton color="inherit" component="a" href="https://www.facebook.com/" target="_blank"><Facebook /></IconButton>
-          <IconButton color="inherit" component="a" href="https://www.instagram.com/" target="_blank"><Instagram /></IconButton>
-          <IconButton color="inherit" component="a" href="mailto:lujanlucasariel@gmail.com"><Email /></IconButton>
-          <IconButton color="inherit" component="a" href="https://wa.me/5491164978342" target="_blank"><WhatsApp /></IconButton>
+        <Typography color="#424242" fontFamily={'libre-baskerville-regular'} variant="h6">Acerca de nosotros</Typography>
+        <Typography color="#424242" fontFamily={'libre-baskerville-regular'} variant="body2"> Contacto | FAQ | Terminos y Condiciones</Typography>
+          <IconButton color="#424242" component="a" href="https://www.facebook.com/" target="_blank"><Facebook /></IconButton>
+          <IconButton color="#424242" component="a" href="https://www.instagram.com/" target="_blank"><Instagram /></IconButton>
+          <IconButton color="#424242" component="a" href="mailto:lujanlucasariel@gmail.com"><Email /></IconButton>
+          <IconButton color="#424242" component="a" href="https://wa.me/5491164978342" target="_blank"><WhatsApp /></IconButton>
         </Box>
     </>
   );
