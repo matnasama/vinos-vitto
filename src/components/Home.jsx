@@ -8,7 +8,7 @@ import WhatsApp from "@mui/icons-material/WhatsApp";
 import Carousel from "react-material-ui-carousel";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-const images = ["src/assets/img1.jpg", "src/assets/img2.jpg", "src/assets/img3.jpg", "src/assets/img4.jpg", "src/assets/img5.jpg"];
+const images = ["/assets/img1.jpg", "/assets/img2.jpg", "/assets/img3.jpg", "/assets/img4.jpg", "/assets/img5.jpg"];
 const wines = [
   {
     brand: "ABUELO NITO",
