@@ -171,13 +171,13 @@ function App() {
           </Typography>
         <Grid container spacing={3} justifyContent="center">
           <Grid item>
-            <img src="src/assets/tarjeta-credito.png" alt="Tarjeta" style={{ height: 50 }} />
+            <img src="/tarjeta-credito.png" alt="Tarjeta" style={{ height: 50 }} />
           </Grid>           
           <Grid item>
-            <img src="src/assets/dinero.png" alt="Efectivo" style={{ height: 50 }} />
+            <img src="/dinero.png" alt="Efectivo" style={{ height: 50 }} />
           </Grid>
           <Grid item>
-            <img src="src/assets/mercadopago-logo.png" alt="MercadoPago" style={{ height: 50 }} />
+            <img src="/mercadopago-logo.png" alt="MercadoPago" style={{ height: 50 }} />
           </Grid>          
         </Grid>
       </Container>
