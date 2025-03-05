@@ -1,5 +1,5 @@
-import React from "react";
-import { AppBar, Toolbar, Typography, IconButton, Container, Grid, Accordion, AccordionSummary, AccordionDetails, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box } from "@mui/material";
+import React, { useState } from "react";
+import { AppBar, Toolbar, Typography, IconButton, Container, Grid, Accordion, AccordionSummary, AccordionDetails, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Button, Box, Modal, Badge } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Facebook from "@mui/icons-material/Facebook";
 import Instagram from "@mui/icons-material/Instagram";
@@ -7,6 +7,11 @@ import Email from "@mui/icons-material/Email";
 import WhatsApp from "@mui/icons-material/WhatsApp";
 import Carousel from "react-material-ui-carousel";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const images = ["/img1.jpg", "/img2.jpg", "/img3.jpg", "/img4.jpg", "/img5.jpg"];
 const wines = [
@@ -96,6 +101,36 @@ const wines = [
 ];
 
 function App() {
+  const [cart, setCart] = useState([]);
+  const [openCart, setOpenCart] = useState(false);
+
+  const addToCart = (wine, variant, quantity = 1) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find(
+        (item) => item.type === variant.type && item.brand === wine.brand
+      );
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item === existingItem ? { ...item, quantity: item.quantity + quantity } : item
+        );
+      } else {
+        return [...prevCart, { brand: wine.brand, type: variant.type, price: variant.price, quantity }];
+      }
+    });
+  };
+
+  const updateQuantity = (index, delta) => {
+    setCart((prevCart) =>
+      prevCart.map((item, i) =>
+        i === index ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+      )
+    );
+  };
+
+  const removeFromCart = (index) => {
+    setCart((prevCart) => prevCart.filter((_, i) => i !== index));
+  };
+
   return (
     <>
       <AppBar position="static" >
@@ -107,7 +142,11 @@ function App() {
           <IconButton color="inherit" component="a" href="https://www.instagram.com/" target="_blank"><Instagram /></IconButton>
           <IconButton color="inherit" component="a" href="mailto:lujanlucasariel@gmail.com"><Email /></IconButton>
           <IconButton color="inherit" component="a" href="https://wa.me/5491164978342" target="_blank"><WhatsApp /></IconButton>
-          <IconButton color="inherit"><ShoppingCartIcon /></IconButton>
+          <IconButton color="inherit" onClick={() => setOpenCart(true)}>
+            <Badge badgeContent={cart.reduce((sum, item) => sum + item.quantity, 0)} color="error">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
         </Toolbar>
       </AppBar>
 
@@ -119,41 +158,28 @@ function App() {
         </Carousel>
       </Container>
 
-      <Container sx={{ mt: 4, display: 'grid', gap: '2rem' }}>
+      <Container sx={{ mt: 4 }}>
         {wines.map((wine, index) => (
-          <Accordion key={index} sx={{  }}>
+          <Accordion key={index}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography fontFamily={'libre-baskerville-regular'} variant="h5">{wine.brand}</Typography>
+              <Typography variant="h5">{wine.brand}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <TableContainer component={Paper}>
                 <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>                      
-                        <Typography fontFamily={'sans-serif'} variant="h6" sx={{ flexGrow: 1 }}>
-                          Variedad
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography fontFamily={'sans-serif'} variant="h6" sx={{ flexGrow: 1 }}>
-                          Precio
-                        </Typography>
-                      </TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
                   <TableBody>
                     {wine.variants.map((variant, vIndex) => (
                       <TableRow key={vIndex}>
                         <TableCell>{variant.type}</TableCell>
+                        <TableCell>${variant.price}</TableCell>
                         <TableCell>
-                          <Typography fontFamily={'sans-serif'} fontWeight={500} color="#1b5e20" variant="h6" sx={{ flexGrow: 1 }}>
-                            ${variant.price}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <IconButton color="primary"><ShoppingCartIcon /></IconButton>
+                          <IconButton onClick={() => addToCart(wine, variant)}>
+                            <AddShoppingCartIcon />
+                          </IconButton>
+                          <IconButton onClick={() => addToCart(wine, variant, 6)}>
+                            <InventoryIcon />
+                          </IconButton>
+                          <Typography variant="body2">{cart.find(item => item.type === variant.type && item.brand === wine.brand)?.quantity || 0}</Typography>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -164,6 +190,38 @@ function App() {
           </Accordion>
         ))}
       </Container>
+
+      <Modal open={openCart} onClose={() => setOpenCart(false)}>
+        <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "90%", maxWidth: 400, bgcolor: "background.paper", p: 4 }}>
+          <Typography variant="h6">Carrito</Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableBody>
+                {cart.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.brand} - {item.type}</TableCell>
+                    <TableCell>${item.price * item.quantity}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => updateQuantity(index, -1)}>
+                        <RemoveIcon />
+                      </IconButton>
+                      {item.quantity}
+                      <IconButton onClick={() => updateQuantity(index, 1)}>
+                        <AddIcon />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => removeFromCart(index)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Modal>
 
       <Container sx={{ mt: 4, textAlign: "center" }}>
       <Typography fontFamily={'libre-baskerville-regular'} variant="h4" sx={{ flexGrow: 1, marginBottom: '16px' }}>
