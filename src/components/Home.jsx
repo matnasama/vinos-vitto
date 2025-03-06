@@ -17,87 +17,88 @@ const wines = [
   {
     brand: "ABUELO NITO",
     variants: [
-      { type: "Malbec", price: 6000 },
-      { type: "Pinot Noir", price: 6000 },
-      { type: "Blanco Tardío", price: 6000 }
+      { type: "Malbec", price: 6500 },
+      { type: "Pinot Noir", price: 6500 },
+      { type: "Blanco Tardío", price: 6500 }
     ]
   },
   {
     brand: "BOURNETT",
     variants: [
-      { type: "Malbec", price: 5000 },
-      { type: "Cabernet", price: 5000 },
-      { type: "Rosado", price: 5000 },
-      { type: "Chardonnay", price: 5000 },
-      { type: "Numerado", price: 7500 },
-      { type: "Fangio Legend", price: 12000 },
-      { type: "RS Blend", price: 15000 }
+      { type: "Malbec", price: 5500 },
+      { type: "Cabernet", price: 5500 },
+      { type: "Rosado", price: 5500 },
+      { type: "Chardonnay", price: 5500 },
+      { type: "Numerado", price: 8000 },
+      { type: "Fangio Legend", price: 12500 },
+      { type: "RS Blend", price: 15500 }
     ]
   },
   {
     brand: "DURET",
     variants: [
-      { type: "Malbec", price: 5000 },
-      { type: "Cabernet", price: 5000 },
-      { type: "Botella de 1.125 ml", price: 6000 }
+      { type: "Malbec", price: 5500 },
+      { type: "Cabernet", price: 5500 },
+      { type: "Botella de 1.125 ml", price: 6500 }
     ]
   },
   {
     brand: "LA ELEGIDA",
     variants: [
-      { type: "Malbec", price: 4000 },
-      { type: "Cabernet", price: 4000 }
+      { type: "Malbec", price: 4500 },
+      { type: "Cabernet", price: 4500 }
     ]
   },
   {
     brand: "JEAN RIVIER",
     variants: [
-      { type: "Malbec", price: 6000 },
-      { type: "Cabernet Franc", price: 6000 },
-      { type: "Blanco Dulce", price: 6000 },
-      { type: "Rosé", price: 6000 },
-      { type: "Bag box 3 litros Malbec", price: 14000 },
-      { type: "Corte Malbec-Bonarda", price: 4000 }
+      { type: "Malbec", price: 6500 },
+      { type: "Cabernet Franc", price: 6500 },
+      { type: "Blanco Dulce", price: 6500 },
+      { type: "Rosé", price: 6500 },
+      { type: "Bag box 3 litros Malbec", price: 14500 },
+      { type: "Corte Malbec-Bonarda", price: 4500 }
     ]
   },
   {
     brand: "LA IRIDE",
     variants: [
-      { type: "Plateada", price: 4500 },
-      { type: "Roja", price: 5000 },
-      { type: "Dorada", price: 6500 },
-      { type: "Naranjo especial (caja x3)", price: 40000 }
+      { type: "Plateada", price: 5000 },
+      { type: "Roja", price: 5500 },
+      { type: "Dorada", price: 7000 },
+      { type: "Naranjo especial (caja x3)", price: 40500 }
     ]
   },
   {
     brand: "BEDUINA",
     variants: [
-      { type: "Malbec", price: 9500 },
-      { type: "Blend de tintas", price: 11000 }
+      { type: "Malbec", price: 10000 },
+      { type: "Blend de tintas", price: 11500 }
     ]
   },
   {
     brand: "CREACIÓN",
     variants: [
-      { type: "Malbec", price: 15000 },
-      { type: "Cabernet", price: 15000 }
+      { type: "Malbec", price: 15500 },
+      { type: "Cabernet", price: 15500 }
     ]
   },
   {
     brand: "LA PUERTA",
     variants: [
-      { type: "Reserva Cabernet", price: 9900 },
-      { type: "Reserva Malbec", price: 9900 },
-      { type: "Syrah", price: 7500 }
+      { type: "Reserva Cabernet", price: 15500 },
+      { type: "Reserva Malbec", price: 15500 },
+      { type: "Syrah", price: 8500 }
     ]
   },
   {
     brand: "LA QUEBRADA",
     variants: [
-      { type: "Tinto", price: 2900 }
+      { type: "Tinto", price: 3400 }
     ]
   }
 ];
+
 
 function App() {
   const [cart, setCart] = useState([]);
