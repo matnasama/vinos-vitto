@@ -8,7 +8,6 @@ import WhatsApp from "@mui/icons-material/WhatsApp";
 import Carousel from "react-material-ui-carousel";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import InventoryIcon from "@mui/icons-material/Inventory";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -166,20 +165,23 @@ function App() {
             </AccordionSummary>
             <AccordionDetails>
               <TableContainer component={Paper}>
-                <Table>
+                <Table >
                   <TableBody>
                     {wine.variants.map((variant, vIndex) => (
                       <TableRow key={vIndex}>
                         <TableCell>{variant.type}</TableCell>
                         <TableCell>${variant.price}</TableCell>
                         <TableCell>
-                          <IconButton onClick={() => addToCart(wine, variant)}>
-                            <AddShoppingCartIcon />
-                          </IconButton>
-                          <IconButton onClick={() => addToCart(wine, variant, 6)}>
-                            <InventoryIcon />
-                          </IconButton>
-                          <Typography variant="body2">{cart.find(item => item.type === variant.type && item.brand === wine.brand)?.quantity || 0}</Typography>
+                          <Badge 
+                            badgeContent={
+                              cart.find(item => item.brand === wine.brand && item.type === variant.type)?.quantity || 0
+                            } 
+                            color="error"
+                          >
+                            <IconButton onClick={() => addToCart(wine, variant)}>
+                              <AddShoppingCartIcon />
+                            </IconButton>
+                          </Badge>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -192,36 +194,96 @@ function App() {
       </Container>
 
       <Modal open={openCart} onClose={() => setOpenCart(false)}>
-        <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "90%", maxWidth: 400, bgcolor: "background.paper", p: 4 }}>
-          <Typography variant="h6">Carrito</Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableBody>
-                {cart.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.brand} - {item.type}</TableCell>
-                    <TableCell>${item.price * item.quantity}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => updateQuantity(index, -1)}>
-                        <RemoveIcon />
-                      </IconButton>
-                      {item.quantity}
-                      <IconButton onClick={() => updateQuantity(index, 1)}>
-                        <AddIcon />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => removeFromCart(index)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: { xs: "80%", md: "75%" },
+            height: { xs: "80%",},
+            bgcolor: "background.paper",
+            p: 4,
+            borderRadius: 2,
+            boxShadow: 24,
+          }}
+        >
+          <Grid container spacing={2} direction={{ xs: "column", md: "row" }}>
+            
+            {/* Sección de productos */}
+            <Grid item xs={11} md={6} 
+            sx={{ width: { xs: "100%", maxHeight: 450, overflow: 'scroll' } }}>
+              {cart.length > 0 ? (
+                <TableContainer component={Paper}>
+                  <Typography  sx={{ p: 2 }} variant="h6">Productos</Typography>
+                  <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                    <TableBody>
+                      {cart.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.brand} {item.type}</TableCell>
+                          <TableCell>${item.price * item.quantity}</TableCell>
+                          <TableCell>
+                            <IconButton onClick={() => updateQuantity(index, -1)}>
+                              <RemoveIcon />
+                            </IconButton>
+                            {item.quantity}
+                            <IconButton onClick={() => updateQuantity(index, 1)}>
+                              <AddIcon />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>
+                            <IconButton onClick={() => removeFromCart(index)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Typography>No hay productos en el carrito</Typography>
+              )}
+            </Grid>
+
+            {/* Sección de resumen */}
+            <Grid item xs={11} md={4}>
+              <Paper sx={{ p: 2 }}>
+                <Typography variant="h6">Resumen</Typography>
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>Productos ({cart.length})</TableCell>
+                      <TableCell align="right">
+                        ${cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Envío</TableCell>
+                      <TableCell align="right">$3.135</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Total</TableCell>
+                      <TableCell align="right">
+                        ${cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 3135}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                >
+                  Continuar compra
+                </Button>
+              </Paper>
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
+
 
       <Container sx={{ mt: 4, textAlign: "center" }}>
       <Typography fontFamily={'libre-baskerville-regular'} variant="h4" sx={{ flexGrow: 1, marginBottom: '16px' }}>
