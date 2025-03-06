@@ -11,6 +11,9 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";  
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+
 
 const images = ["/img1.jpg", "/img2.jpg", "/img3.jpg", "/img4.jpg", "/img5.jpg"];
 const wines = [
@@ -166,13 +169,13 @@ function App() {
             </AccordionSummary>
             <AccordionDetails>
               <TableContainer component={Paper}>
-                <Table >
+                <Table>
                   <TableBody>
                     {wine.variants.map((variant, vIndex) => (
                       <TableRow key={vIndex}>
-                        <TableCell>{variant.type}</TableCell>
-                        <TableCell>${variant.price}</TableCell>
-                        <TableCell>
+                        <TableCell align="justify">{variant.type}</TableCell>
+                        <TableCell align="justify">${variant.price}</TableCell>
+                        <TableCell align="right">
                           <Badge 
                             badgeContent={
                               cart.find(item => item.brand === wine.brand && item.type === variant.type)?.quantity || 0
@@ -183,6 +186,13 @@ function App() {
                               <AddShoppingCartIcon />
                             </IconButton>
                           </Badge>
+                          <IconButton 
+                            onClick={() => setOpenCart(true)}
+                            color="primary"
+                            title="Ir al carrito"
+                          >
+                            <ShoppingCartOutlinedIcon />
+                          </IconButton>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -202,7 +212,7 @@ function App() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: { xs: "80%", md: "75%" },
-            height: { xs: "80%",},
+            height: { xs: "80%" },
             bgcolor: "background.paper",
             overflowY: 'auto',
             p: 4,
@@ -210,11 +220,21 @@ function App() {
             boxShadow: 24,
           }}
         >
+          {/* Close Button */}
+          <IconButton
+            onClick={() => setOpenCart(false)}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+
           <Grid container spacing={2} direction={{ xs: "column", md: "row"}}>
-            
-            {/* Sección de productos */}
-            <Grid item xs={11} md={6} 
-            sx={{ width: { xs: "100%" } }}>
+            {/* Products Section */}
+            <Grid item xs={11} md={6} sx={{ width: { xs: "100%" } }}>
               {cart.length > 0 ? (
                 <TableContainer component={Paper}>
                   <Typography sx={{ p: 2 }} variant="h6">Productos</Typography>
@@ -222,9 +242,9 @@ function App() {
                     <TableBody>
                       {cart.map((item, index) => (
                         <TableRow key={index}>
-                          <TableCell>{item.brand} {item.type}</TableCell>
-                          <TableCell>${item.price * item.quantity}</TableCell>
-                          <TableCell>
+                          <TableCell align="justify">{item.type}</TableCell>
+                          <TableCell align="left">${item.price * item.quantity}</TableCell>
+                          <TableCell align="left">
                             <IconButton onClick={() => updateQuantity(index, -1)}>
                               <RemoveIcon />
                             </IconButton>
@@ -233,7 +253,7 @@ function App() {
                               <AddIcon />
                             </IconButton>
                           </TableCell>
-                          <TableCell>
+                          <TableCell align="left">
                             <IconButton onClick={() => removeFromCart(index)}>
                               <DeleteIcon />
                             </IconButton>
@@ -248,7 +268,7 @@ function App() {
               )}
             </Grid>
 
-            {/* Sección de resumen */}
+            {/* Summary Section */}
             <Grid item xs={11} md={4}>
               <Paper sx={{ p: 2 }}>
                 <Typography variant="h6">Resumen</Typography>
@@ -285,7 +305,6 @@ function App() {
           </Grid>
         </Box>
       </Modal>
-
 
       <Container sx={{ mt: 4, textAlign: "center" }}>
       <Typography fontFamily={'libre-baskerville-regular'} variant="h4" sx={{ flexGrow: 1, marginBottom: '16px' }}>
