@@ -211,11 +211,12 @@ function App() {
           <Grid container spacing={2} direction={{ xs: "column", md: "row" }}>
             
             {/* Sección de productos */}
+            <Typography  sx={{ p: 2 }} variant="h6">Productos</Typography>
+
             <Grid item xs={11} md={6} 
-            sx={{ width: { xs: "100%", maxHeight: 450, overflow: 'scroll' } }}>
+            sx={{ width: { xs: "100%", maxHeight: 350, overflow: 'scroll' } }}>
               {cart.length > 0 ? (
                 <TableContainer component={Paper}>
-                  <Typography  sx={{ p: 2 }} variant="h6">Productos</Typography>
                   <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                     <TableBody>
                       {cart.map((item, index) => (
