@@ -13,38 +13,47 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";  
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import SearchIcon from '@mui/icons-material/Search';
 
 
 const images = ["/img1.jpg", "/img2.jpg", "/img3.jpg", "/img4.jpg", "/img5.jpg"];
   
-function agruparProductosPorMarca(productos) {
-  const agrupados = {};
+const agruparProductosPorMarca = (productos) => {
+  const agrupado = {};
 
   productos.forEach((producto) => {
     const marca = producto.categoria;
-    if (!agrupados[marca]) {
-      agrupados[marca] = {
+
+    if (!agrupado[marca]) {
+      agrupado[marca] = {
         brand: marca,
         variants: [],
       };
     }
 
-    agrupados[marca].variants.push({
+    agrupado[marca].variants.push({
       type: producto.nombre,
       price: producto.precio,
-      image: producto.imagen_url, // 👈 agregamos la imagen
+      image: producto.imagen_url, // <- acá traemos el nombre del archivo
     });
   });
 
-  return Object.values(agrupados);
-}
-
+  return Object.values(agrupado);
+};
 
 function App() {
 
   const [wines, setWines] = useState([]);
   const [cart, setCart] = useState([]);
   const [openCart, setOpenCart] = useState(false);
+  const [zoomImage, setZoomImage] = useState(null);
+  const [openZoomModal, setOpenZoomModal] = useState(false);
+
+  const handleZoom = (imageName) => {
+    setZoomImage(`/products/${imageName}`);
+    setOpenZoomModal(true);
+  };
+
   
   useEffect(() => {
     fetch("http://localhost:4000/productos")
@@ -63,15 +72,28 @@ function App() {
       const existingItem = prevCart.find(
         (item) => item.type === variant.type && item.brand === wine.brand
       );
+  
       if (existingItem) {
         return prevCart.map((item) =>
-          item === existingItem ? { ...item, quantity: item.quantity + quantity } : item
+          item === existingItem
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
         );
       } else {
-        return [...prevCart, { brand: wine.brand, type: variant.type, price: variant.price, quantity }];
+        return [
+          ...prevCart,
+          {
+            brand: wine.brand,
+            type: variant.type,
+            price: variant.price,
+            image: variant.image, // <- importante
+            quantity,
+          },
+        ];
       }
     });
   };
+  
 
   const updateQuantity = (index, delta) => {
     setCart((prevCart) =>
@@ -125,9 +147,23 @@ function App() {
                     {wine.variants.map((variant, vIndex) => (
                       <TableRow key={vIndex}>
                         <TableCell align="justify">
-                          <img src={variant.image} alt={variant.type} style={{ height: 80, marginRight: 10 }} />
+                          <Box display="flex" alignItems="center" gap={2}>
+                            <img 
+                              src={`/products/${variant.image}`} 
+                              alt={variant.type} 
+                              style={{ 
+                                width: 60, 
+                                height: 60, 
+                                objectFit: 'contain', 
+                                borderRadius: 8,
+                              }}
+                            />
+                            <IconButton onClick={() => handleZoom(variant.image)} title="Ver imagen">
+                              <SearchIcon />
+                            </IconButton>
+                            {variant.type}
+                          </Box>
                         </TableCell>
-                        <TableCell align="justify">{variant.type}</TableCell>
                         <TableCell align="justify">${variant.price}</TableCell>
                         <TableCell align="right">
                           <Badge 
@@ -157,6 +193,44 @@ function App() {
           </Accordion>
         ))}
       </Container>
+      <Modal open={openZoomModal} onClose={() => setOpenZoomModal(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            p: 2,
+            borderRadius: 2,
+            boxShadow: 24,
+            maxWidth: '90%',
+            maxHeight: '90%',
+            outline: 'none',
+          }}
+        >
+          <IconButton
+            onClick={() => setOpenZoomModal(false)}
+            sx={{ position: 'absolute', top: 8, right: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+          {zoomImage && (
+            <img
+              src={zoomImage}
+              alt="Zoom"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '80vh',
+                display: 'block',
+                margin: '0 auto',
+                borderRadius: 8,
+              }}
+            />
+          )}
+        </Box>
+      </Modal>
+
 
       <Modal open={openCart} onClose={() => setOpenCart(false)}>
         <Box
@@ -193,29 +267,44 @@ function App() {
                 <TableContainer component={Paper}>
                   <Typography sx={{ p: 2 }} variant="h6">Productos</Typography>
                   <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-                    <TableBody>
-                      {cart.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell align="justify">{item.type}</TableCell>
-                          <TableCell align="left">${item.price * item.quantity}</TableCell>
-                          <TableCell align="left">
-                            <IconButton onClick={() => updateQuantity(index, -1)}>
-                              <RemoveIcon />
-                            </IconButton>
-                            {item.quantity}
-                            <IconButton onClick={() => updateQuantity(index, 1)}>
-                              <AddIcon />
-                            </IconButton>
-                          </TableCell>
-                          <TableCell align="left">
-                            <IconButton onClick={() => removeFromCart(index)}>
-                              <DeleteIcon />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                  <TableBody>
+                    {cart.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell align="justify">
+                          <Box display="flex" alignItems="center" gap={2}>
+                            <img
+                              src={`/products/${item.image}`}
+                              alt={item.type}
+                              style={{
+                                width: 60,
+                                height: 60,
+                                objectFit: "contain",
+                                borderRadius: 8,
+                              }}
+                            />
+                            {item.type}
+                          </Box>
+                        </TableCell>
+                        <TableCell align="left">${item.price * item.quantity}</TableCell>
+                        <TableCell align="left">
+                          <IconButton onClick={() => updateQuantity(index, -1)}>
+                            <RemoveIcon />
+                          </IconButton>
+                          {item.quantity}
+                          <IconButton onClick={() => updateQuantity(index, 1)}>
+                            <AddIcon />
+                          </IconButton>
+                        </TableCell>
+                        <TableCell align="left">
+                          <IconButton onClick={() => removeFromCart(index)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+
+                </Table>
                 </TableContainer>
               ) : (
                 <Typography>No hay productos en el carrito</Typography>
