@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AppBar, Toolbar, Typography, IconButton, Container, Grid, Accordion, AccordionSummary, AccordionDetails, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Button, Box, Modal, Badge } from "@mui/material";
+import { AppBar, Toolbar, Typography, IconButton, Container, Grid, Accordion, AccordionSummary, AccordionDetails, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Button, Box, Modal, Badge, Card, CardMedia, CardContent, CardActions   } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Facebook from "@mui/icons-material/Facebook";
 import Instagram from "@mui/icons-material/Instagram";
@@ -141,55 +141,51 @@ function App() {
               <Typography variant="h5">{wine.brand}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableBody>
-                    {wine.variants.map((variant, vIndex) => (
-                      <TableRow key={vIndex}>
-                        <TableCell align="justify">
-                          <Box display="flex" alignItems="center" gap={2}>
-                            <img 
-                              src={`/products/${variant.image}`} 
-                              alt={variant.type} 
-                              style={{ 
-                                width: 60, 
-                                height: 60, 
-                                objectFit: 'contain', 
-                                borderRadius: 8,
-                              }}
-                            />
-                            <IconButton onClick={() => handleZoom(variant.image)} title="Ver imagen">
-                              <SearchIcon />
-                            </IconButton>
-                            {variant.type}
-                          </Box>
-                        </TableCell>
-                        <TableCell align="justify">${variant.price}</TableCell>
-                        <TableCell align="right">
-                          <Badge 
-                            badgeContent={
-                              cart.find(item => item.brand === wine.brand && item.type === variant.type)?.quantity || 0
-                            } 
-                            color="error"
-                          >
-                            <IconButton onClick={() => addToCart(wine, variant)}>
-                              <AddShoppingCartIcon />
-                            </IconButton>
-                          </Badge>
-                          <IconButton 
-                            onClick={() => setOpenCart(true)}
-                            color="primary"
-                            title="Ir al carrito"
-                          >
-                            <ShoppingCartOutlinedIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </AccordionDetails>
+  <Grid container spacing={2}>
+    {wine.variants.map((variant, vIndex) => (
+      <Grid item xs={12} sm={6} md={4} key={vIndex}>
+        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 2 }}>
+          <CardMedia
+            component="img"
+            image={`/products/${variant.image}`}
+            alt={variant.type}
+            height="200"
+            sx={{ objectFit: 'contain', p: 2 }}
+          />
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" gutterBottom>
+              {variant.type}
+            </Typography>
+            <Typography variant="body1">${variant.price}</Typography>
+          </CardContent>
+          <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+            <IconButton onClick={() => handleZoom(variant.image)} title="Ver imagen">
+              <SearchIcon />
+            </IconButton>
+            <Badge 
+              badgeContent={
+                cart.find(item => item.brand === wine.brand && item.type === variant.type)?.quantity || 0
+              } 
+              color="error"
+            >
+              <IconButton onClick={() => addToCart(wine, variant)}>
+                <AddShoppingCartIcon />
+              </IconButton>
+            </Badge>
+            <IconButton 
+              onClick={() => setOpenCart(true)}
+              color="primary"
+              title="Ir al carrito"
+            >
+              <ShoppingCartOutlinedIcon />
+            </IconButton>
+          </CardActions>
+        </Card>
+      </Grid>
+    ))}
+  </Grid>
+</AccordionDetails>
+
           </Accordion>
         ))}
       </Container>
