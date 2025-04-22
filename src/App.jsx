@@ -5,6 +5,7 @@ import Cart from "./components/Cart";
 import Login from "./components/Login";
 import { CartProvider } from "./contexts/CartContext"; // asegurate de moverlo a esta ruta
 import MisPedidos from "./components/MisPedidos";
+import Register from "./components/Register"; // importarlo arriba
 import "./App.css";
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
               )
             }
           />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </Router>
     </CartProvider>

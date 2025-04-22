@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   AppBar, Toolbar, Typography, IconButton, Container, Grid, Accordion,
   AccordionSummary, AccordionDetails, Card, CardMedia, CardContent, CardActions,
-  Badge, Button, Box, Modal, Table, TableBody, TableCell, TableRow, Paper
+  Badge, Button, Box, Modal
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Facebook from "@mui/icons-material/Facebook";
@@ -53,7 +53,7 @@ function Home({ user, setUser }) {
   const [showLogin, setShowLogin] = useState(false);
   const navigate = useNavigate();
 
-  const { cart, addToCart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { cart, addToCart, clearCart } = useCart();
 
   useEffect(() => {
     fetch("http://localhost:4000/productos")
@@ -105,6 +105,7 @@ function Home({ user, setUser }) {
 
       alert("Compra registrada con éxito!");
       clearCart();
+      navigate("/mis-pedidos");
     } catch (error) {
       console.error("Error al registrar la orden:", error);
       alert("Hubo un error al procesar tu orden.");
@@ -115,20 +116,29 @@ function Home({ user, setUser }) {
     <>
       <AppBar position="static">
         <Toolbar sx={{ backgroundColor: "#e4adb0" }}>
-          <Typography
-            fontFamily={"libre-baskerville-regular"}
-            variant="h4"
-            sx={{ flexGrow: 1 }}
-          >
+          <Typography fontFamily={"libre-baskerville-regular"} variant="h4" sx={{ flexGrow: 1 }}>
             VITTO'S WINE
           </Typography>
 
-          {user && (
-            <Button color="inherit" onClick={() => navigate("/mis-pedidos")}>
-              Mis Pedidos
+          {user ? (
+            <>
+              <Button color="inherit" onClick={() => navigate("/mis-pedidos")}>
+                Mis Pedidos
+              </Button>
+              <Button color="inherit" onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                setUser(null);
+                navigate("/");
+              }}>
+                Cerrar Sesión
+              </Button>
+            </>
+          ) : (
+            <Button color="inherit" onClick={() => navigate("/login")}>
+              Iniciar Sesión
             </Button>
           )}
-
           <IconButton color="inherit" href="https://www.facebook.com/" target="_blank"><Facebook /></IconButton>
           <IconButton color="inherit" href="https://www.instagram.com/" target="_blank"><Instagram /></IconButton>
           <IconButton color="inherit" href="mailto:lujanlucasariel@gmail.com"><Email /></IconButton>
@@ -140,7 +150,6 @@ function Home({ user, setUser }) {
           </IconButton>
         </Toolbar>
       </AppBar>
-
 
       <Container sx={{ mt: 2 }}>
         <Carousel>
@@ -165,14 +174,7 @@ function Home({ user, setUser }) {
               <Grid container spacing={2}>
                 {wine.variants.map((variant, vIndex) => (
                   <Grid item xs={12} sm={6} md={4} key={vIndex}>
-                    <Card
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        borderRadius: 2,
-                      }}
-                    >
+                    <Card sx={{ height: "100%", display: "flex", flexDirection: "column", borderRadius: 2 }}>
                       <CardMedia
                         component="img"
                         image={`/products/${variant.image}`}
@@ -190,12 +192,7 @@ function Home({ user, setUser }) {
                         <IconButton onClick={() => handleZoom(variant.image)} title="Ver imagen">
                           <SearchIcon />
                         </IconButton>
-                        <Badge
-                          badgeContent={
-                            cart.find(item => item.id === variant.id)?.quantity || 0
-                          }
-                          color="error"
-                        >
+                        <Badge badgeContent={cart.find(item => item.id === variant.id)?.quantity || 0} color="error">
                           <IconButton onClick={() => addToCart(wine, variant)}>
                             <AddShoppingCartIcon />
                           </IconButton>
@@ -214,30 +211,18 @@ function Home({ user, setUser }) {
       </Container>
 
       <Container sx={{ mt: 4, textAlign: "center" }}>
-        <Typography
-          fontFamily={"libre-baskerville-regular"}
-          variant="h4"
-          sx={{ marginBottom: "16px" }}
-        >
+        <Typography fontFamily={"libre-baskerville-regular"} variant="h4" sx={{ marginBottom: "16px" }}>
           MEDIOS DE PAGO
         </Typography>
         <Grid container spacing={3} justifyContent="center">
-          <Grid item>
-            <img src="/tarjeta-credito.png" alt="Tarjeta" style={{ height: 50 }} />
-          </Grid>
-          <Grid item>
-            <img src="/dinero.png" alt="Efectivo" style={{ height: 50 }} />
-          </Grid>
-          <Grid item>
-            <img src="/mercadopago-logo.png" alt="MercadoPago" style={{ height: 50 }} />
-          </Grid>
+          <Grid item><img src="/tarjeta-credito.png" alt="Tarjeta" style={{ height: 50 }} /></Grid>
+          <Grid item><img src="/dinero.png" alt="Efectivo" style={{ height: 50 }} /></Grid>
+          <Grid item><img src="/mercadopago-logo.png" alt="MercadoPago" style={{ height: 50 }} /></Grid>
         </Grid>
       </Container>
 
       <Box sx={{ mt: 4, p: 4, backgroundColor: "#f5f5f5", textAlign: "center" }}>
-        <Typography color="#424242" fontFamily={'libre-baskerville-regular'} variant="h6">
-          Acerca de nosotros
-        </Typography>
+        <Typography color="#424242" fontFamily={'libre-baskerville-regular'} variant="h6">Acerca de nosotros</Typography>
         <Typography color="#424242" fontFamily={'libre-baskerville-regular'} variant="body2">
           Contacto | FAQ | Términos y Condiciones
         </Typography>
@@ -249,20 +234,12 @@ function Home({ user, setUser }) {
 
       {showLogin && (
         <Modal open={true} onClose={() => setShowLogin(false)}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              bgcolor: "background.paper",
-              p: 4,
-              borderRadius: 2,
-              boxShadow: 24,
-              maxWidth: 400,
-              width: "90%",
-            }}
-          >
+          <Box sx={{
+            position: "absolute", top: "50%", left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper", p: 4, borderRadius: 2, boxShadow: 24,
+            maxWidth: 400, width: "90%",
+          }}>
             <IconButton
               onClick={() => setShowLogin(false)}
               sx={{ position: "absolute", top: 8, right: 8 }}

@@ -7,20 +7,55 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCart } from '../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
-  const { cart, updateQuantity, removeFromCart } = useCart();
+  const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const navigate = useNavigate();
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const envio = 3135;
   const total = subtotal + envio;
 
-  const onFinalizarCompra = () => {
-    // lógica para enviar la orden al backend
-    console.log("Compra finalizada");
+  const onFinalizarCompra = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) {
+      alert("Debes iniciar sesión para finalizar la compra.");
+      navigate("/login");
+      return;
+    }
+
+    const orden = {
+      userId: user.id,
+      productos: cart.map(({ id, quantity, price }) => ({
+        productoId: id,
+        quantity,
+        price,
+      })),
+      total,
+    };
+
+    try {
+      const res = await fetch("http://localhost:4000/orden", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orden),
+      });
+
+      if (!res.ok) throw new Error("Error al registrar la orden");
+
+      alert("Compra realizada con éxito!");
+      clearCart();
+      navigate("/");
+    } catch (error) {
+      console.error("Error al registrar la orden:", error);
+      alert("Hubo un error al procesar tu orden.");
+    }
   };
-
-  console.log("Carrito actual:", cart);
-
 
   return (
     <Box sx={{ p: 4 }}>
@@ -101,4 +136,3 @@ const Cart = () => {
 };
 
 export default Cart;
-
