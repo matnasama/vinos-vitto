@@ -1,24 +1,20 @@
+// src/components/Home.jsx
 import React, { useState, useEffect } from "react";
 import {
-  AppBar, Toolbar, Typography, IconButton, Container, Grid, Accordion,
-  AccordionSummary, AccordionDetails, Card, CardMedia, CardContent, CardActions,
-  Badge, Button, Box, Modal
+  Container, Grid, Accordion, AccordionSummary, AccordionDetails,
+  Card, CardMedia, CardContent, CardActions, Typography, IconButton, Badge,
+  Snackbar, Box, Modal, Button
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Facebook from "@mui/icons-material/Facebook";
-import Instagram from "@mui/icons-material/Instagram";
-import Email from "@mui/icons-material/Email";
-import WhatsApp from "@mui/icons-material/WhatsApp";
-import Carousel from "react-material-ui-carousel";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import SearchIcon from "@mui/icons-material/Search";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import SearchIcon from '@mui/icons-material/Search';
+import MuiAlert from '@mui/material/Alert';
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
-
-import Login from "./Login";
 import { useCart } from "../contexts/CartContext";
+import Carousel from "react-material-ui-carousel";
+import Login from "./Login";
 
 const images = ["/img1.jpg", "/img2.jpg", "/img3.jpg", "/img4.jpg", "/img5.jpg"];
 
@@ -27,14 +23,9 @@ const agruparProductosPorMarca = (productos) => {
 
   productos.forEach((producto) => {
     const marca = producto.categoria;
-
     if (!agrupado[marca]) {
-      agrupado[marca] = {
-        brand: marca,
-        variants: [],
-      };
+      agrupado[marca] = { brand: marca, variants: [] };
     }
-
     agrupado[marca].variants.push({
       id: producto.id,
       type: producto.nombre,
@@ -51,6 +42,7 @@ function Home({ user, setUser }) {
   const [zoomImage, setZoomImage] = useState(null);
   const [openZoomModal, setOpenZoomModal] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
   const navigate = useNavigate();
 
   const { cart, addToCart, clearCart } = useCart();
@@ -62,9 +54,7 @@ function Home({ user, setUser }) {
         const winesAgrupados = agruparProductosPorMarca(data);
         setWines(winesAgrupados);
       })
-      .catch((err) => {
-        console.error("Error al cargar productos:", err);
-      });
+      .catch((err) => console.error("Error al cargar productos:", err));
   }, []);
 
   const handleZoom = (imageName) => {
@@ -72,85 +62,19 @@ function Home({ user, setUser }) {
     setOpenZoomModal(true);
   };
 
-  const handleCompra = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
-
-    if (!user || !token) {
-      setShowLogin(true);
-      return;
-    }
-
-    const orden = {
-      userId: user.id,
-      productos: cart.map(({ id, quantity, price }) => ({
-        productoId: id,
-        quantity,
-        price
-      })),
-      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 3135,
-    };
-
-    try {
-      const res = await fetch("http://localhost:4000/orden", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(orden),
-      });
-
-      if (!res.ok) throw new Error("Error al registrar la orden");
-
-      alert("Compra registrada con éxito!");
-      clearCart();
-      navigate("/mis-pedidos");
-    } catch (error) {
-      console.error("Error al registrar la orden:", error);
-      alert("Hubo un error al procesar tu orden.");
-    }
+  const handleAddToCart = (variant) => {
+    addToCart({
+      id: variant.id,
+      nombre: variant.type,
+      price: Number(variant.price),
+      imagen: variant.image,
+      quantity: 1,
+    });
+    setOpenToast(true);
   };
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar sx={{ backgroundColor: "#e4adb0" }}>
-          <Typography fontFamily={"libre-baskerville-regular"} variant="h4" sx={{ flexGrow: 1 }}>
-            VITTO'S WINE
-          </Typography>
-
-          {user ? (
-            <>
-              <Button color="inherit" onClick={() => navigate("/mis-pedidos")}>
-                Mis Pedidos
-              </Button>
-              <Button color="inherit" onClick={() => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                setUser(null);
-                navigate("/");
-              }}>
-                Cerrar Sesión
-              </Button>
-            </>
-          ) : (
-            <Button color="inherit" onClick={() => navigate("/login")}>
-              Iniciar Sesión
-            </Button>
-          )}
-          <IconButton color="inherit" href="https://www.facebook.com/" target="_blank"><Facebook /></IconButton>
-          <IconButton color="inherit" href="https://www.instagram.com/" target="_blank"><Instagram /></IconButton>
-          <IconButton color="inherit" href="mailto:lujanlucasariel@gmail.com"><Email /></IconButton>
-          <IconButton color="inherit" href="https://wa.me/5491164978342" target="_blank"><WhatsApp /></IconButton>
-          <IconButton color="inherit" onClick={() => navigate("/cart")}>
-            <Badge badgeContent={cart.reduce((sum, item) => sum + item.quantity, 0)} color="error">
-              <ShoppingCartIcon />
-            </Badge>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
       <Container sx={{ mt: 2 }}>
         <Carousel>
           {images.map((img, index) => (
@@ -193,7 +117,7 @@ function Home({ user, setUser }) {
                           <SearchIcon />
                         </IconButton>
                         <Badge badgeContent={cart.find(item => item.id === variant.id)?.quantity || 0} color="error">
-                          <IconButton onClick={() => addToCart(wine, variant)}>
+                          <IconButton onClick={() => handleAddToCart(variant)}>
                             <AddShoppingCartIcon />
                           </IconButton>
                         </Badge>
@@ -209,50 +133,60 @@ function Home({ user, setUser }) {
           </Accordion>
         ))}
       </Container>
-
       <Container sx={{ mt: 4, textAlign: "center" }}>
         <Typography fontFamily={"libre-baskerville-regular"} variant="h4" sx={{ marginBottom: "16px" }}>
           MEDIOS DE PAGO
         </Typography>
         <Grid container spacing={3} justifyContent="center">
-          <Grid item><img src="/tarjeta-credito.png" alt="Tarjeta" style={{ height: 50 }} /></Grid>
-          <Grid item><img src="/dinero.png" alt="Efectivo" style={{ height: 50 }} /></Grid>
-          <Grid item><img src="/mercadopago-logo.png" alt="MercadoPago" style={{ height: 50 }} /></Grid>
+          <Grid item>
+            <img src="/tarjeta-credito.png" alt="Tarjeta de crédito" style={{ height: 50 }} />
+          </Grid>
+          <Grid item>
+            <img src="/dinero.png" alt="Efectivo" style={{ height: 50 }} />
+          </Grid>
+          <Grid item>
+            <img src="/mercadopago-logo.png" alt="MercadoPago" style={{ height: 50 }} />
+          </Grid>
         </Grid>
       </Container>
 
-      <Box sx={{ mt: 4, p: 4, backgroundColor: "#f5f5f5", textAlign: "center" }}>
-        <Typography color="#424242" fontFamily={'libre-baskerville-regular'} variant="h6">Acerca de nosotros</Typography>
-        <Typography color="#424242" fontFamily={'libre-baskerville-regular'} variant="body2">
-          Contacto | FAQ | Términos y Condiciones
-        </Typography>
-        <IconButton color="#424242" href="https://www.facebook.com/" target="_blank"><Facebook /></IconButton>
-        <IconButton color="#424242" href="https://www.instagram.com/" target="_blank"><Instagram /></IconButton>
-        <IconButton color="#424242" href="mailto:lujanlucasariel@gmail.com"><Email /></IconButton>
-        <IconButton color="#424242" href="https://wa.me/5491164978342" target="_blank"><WhatsApp /></IconButton>
-      </Box>
 
+      {/* Toast agregado al carrito */}
+      <Snackbar
+        open={openToast}
+        autoHideDuration={3000}
+        onClose={() => setOpenToast(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <MuiAlert onClose={() => setOpenToast(false)} severity="success" sx={{ width: '100%' }}>
+          Producto agregado al carrito
+        </MuiAlert>
+      </Snackbar>
+
+      {/* Modal de zoom */}
+      <Modal open={openZoomModal} onClose={() => setOpenZoomModal(false)}>
+        <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", bgcolor: "background.paper", p: 4, borderRadius: 2, boxShadow: 24, maxWidth: 400, width: "90%" }}>
+          <IconButton onClick={() => setOpenZoomModal(false)} sx={{ position: "absolute", top: 8, right: 8 }}>
+            <CloseIcon />
+          </IconButton>
+          {zoomImage && (
+            <img src={zoomImage} alt="Zoom" style={{ width: "100%", objectFit: "contain" }} />
+          )}
+        </Box>
+      </Modal>
+
+      {/* Modal de login */}
       {showLogin && (
         <Modal open={true} onClose={() => setShowLogin(false)}>
-          <Box sx={{
-            position: "absolute", top: "50%", left: "50%",
-            transform: "translate(-50%, -50%)",
-            bgcolor: "background.paper", p: 4, borderRadius: 2, boxShadow: 24,
-            maxWidth: 400, width: "90%",
-          }}>
-            <IconButton
-              onClick={() => setShowLogin(false)}
-              sx={{ position: "absolute", top: 8, right: 8 }}
-            >
+          <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", bgcolor: "background.paper", p: 4, borderRadius: 2, boxShadow: 24, maxWidth: 400, width: "90%" }}>
+            <IconButton onClick={() => setShowLogin(false)} sx={{ position: "absolute", top: 8, right: 8 }}>
               <CloseIcon />
             </IconButton>
-            <Login
-              onLogin={(usuario) => {
-                localStorage.setItem("user", JSON.stringify(usuario));
-                setUser(usuario);
-                setShowLogin(false);
-              }}
-            />
+            <Login onLogin={(usuario) => {
+              localStorage.setItem("user", JSON.stringify(usuario));
+              setUser(usuario);
+              setShowLogin(false);
+            }} />
           </Box>
         </Modal>
       )}

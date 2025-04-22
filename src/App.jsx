@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Home from "./components/Home";
 import Cart from "./components/Cart";
 import Login from "./components/Login";
-import { CartProvider } from "./contexts/CartContext"; // asegurate de moverlo a esta ruta
+import Register from "./components/Register";
 import MisPedidos from "./components/MisPedidos";
-import Register from "./components/Register"; // importarlo arriba
+import NavigationBar from "./components/NavigationBar"; // importamos el nuevo
+import { CartProvider } from "./contexts/CartContext";
+import Footer from "./components/Footer";
 import "./App.css";
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
   return (
     <CartProvider>
       <Router>
+        <NavigationBar user={user} setUser={setUser} /> {/* Siempre visible */}
+
         <Routes>
           <Route path="/" element={<Home user={user} setUser={setUser} />} />
           <Route path="/cart" element={<Cart />} />
@@ -31,17 +35,16 @@ function App() {
               user ? (
                 <Navigate to="/" replace />
               ) : (
-                <Login
-                  onLogin={(usuario) => {
-                    localStorage.setItem("user", JSON.stringify(usuario));
-                    setUser(usuario);
-                  }}
-                />
+                <Login onLogin={(usuario) => {
+                  localStorage.setItem("user", JSON.stringify(usuario));
+                  setUser(usuario);
+                }} />
               )
             }
           />
           <Route path="/register" element={<Register />} />
         </Routes>
+        <Footer />
       </Router>
     </CartProvider>
   );

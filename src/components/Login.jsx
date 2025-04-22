@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,7 +6,18 @@ const Login = ({ onLogin }) => {
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [themeMode, setThemeMode] = useState('light');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      setThemeMode(e.matches ? 'dark' : 'light');
+    };
+    handleChange(mediaQuery);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const handleLogin = async () => {
     setError('');
@@ -34,7 +45,9 @@ const Login = ({ onLogin }) => {
 
   return (
     <Box sx={{ maxWidth: 400, margin: 'auto', mt: 4 }}>
-      <Typography variant="h5" mb={2} color="white">Iniciar sesión</Typography>
+      <Typography variant="h5" mb={2} sx={{ color: themeMode === 'dark' ? 'white' : 'black', transition: 'all 0.3s ease' }}>
+        Iniciar sesión
+      </Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <TextField
@@ -44,14 +57,14 @@ const Login = ({ onLogin }) => {
         onChange={(e) => setUsuario(e.target.value)}
         margin="normal"
         InputLabelProps={{
-          style: { color: 'white' }
+          style: { color: themeMode === 'dark' ? 'white' : 'black' }
         }}
         InputProps={{
-          style: { color: 'white' },
+          style: { color: themeMode === 'dark' ? 'white' : 'black' },
           sx: {
-            '& fieldset': { borderColor: 'white' },
-            '&:hover fieldset': { borderColor: 'white' },
-            '&.Mui-focused fieldset': { borderColor: 'white' }
+            '& fieldset': { borderColor: themeMode === 'dark' ? 'white' : 'black' },
+            '&:hover fieldset': { borderColor: themeMode === 'dark' ? 'white' : 'black' },
+            '&.Mui-focused fieldset': { borderColor: themeMode === 'dark' ? 'white' : 'black' }
           }
         }}
       />
@@ -64,19 +77,19 @@ const Login = ({ onLogin }) => {
         onChange={(e) => setPassword(e.target.value)}
         margin="normal"
         InputLabelProps={{
-          style: { color: 'white' }
+          style: { color: themeMode === 'dark' ? 'white' : 'black' }
         }}
         InputProps={{
-          style: { color: 'white' },
+          style: { color: themeMode === 'dark' ? 'white' : 'black' },
           sx: {
-            '& fieldset': { borderColor: 'white' },
-            '&:hover fieldset': { borderColor: 'white' },
-            '&.Mui-focused fieldset': { borderColor: 'white' }
+            '& fieldset': { borderColor: themeMode === 'dark' ? 'white' : 'black' },
+            '&:hover fieldset': { borderColor: themeMode === 'dark' ? 'white' : 'black' },
+            '&.Mui-focused fieldset': { borderColor: themeMode === 'dark' ? 'white' : 'black' }
           }
         }}
       />
 
-      <Button variant="contained" color="primary" onClick={handleLogin} fullWidth sx={{ mt: 2 }}>
+      <Button variant="contained" onClick={handleLogin} fullWidth sx={{ mt: 2, backgroundColor:'#e4adb0' }}>
         Entrar
       </Button>
 
