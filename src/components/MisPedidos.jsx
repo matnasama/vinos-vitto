@@ -32,8 +32,17 @@ const MisPedidos = () => {
               {pedido.productos.map((prod, i) => (
                 <ListItem key={i}>
                   <ListItemText
-                    primary={`${prod.nombre} x${prod.cantidad}`}
-                    secondary={`Precio unitario: $${prod.precio}`}
+                    primary={`${prod.nombre}: ${prod.cantidad} unidades`}
+                    secondary={
+                      <>
+                        <Typography component="span" variant="body2">
+                          Precio unitario: ${prod.precio}
+                        </Typography><br/>
+                        <Typography component="span" variant="body2">
+                          Marca: {prod.marca}
+                        </Typography>
+                      </>
+                    }
                   />
                 </ListItem>
               ))}
